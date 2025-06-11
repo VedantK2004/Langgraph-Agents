@@ -1,15 +1,18 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from os import getenv
 from dotenv import load_dotenv
+from pydantic import SecretStr
 import os
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemma-3-12b-it")
+api = os.getenv("OPENROUTER_API_KEY")
+llm = ChatOpenAI(
+    api_key=SecretStr(api) if api is not None else None,
+    base_url="https://openrouter.ai/api/v1",
+    model="deepseek/deepseek-r1-zero:free",
+)
 
-while True:
-    query = input("Enter your query: ")
-    if query.lower() == "exit":
-        break
-    else:
-        result = llm.invoke(query)
-        print(result.content)
+prompt = "Hi there! Vedant this side."
+
+print(llm.invoke(prompt).content)
